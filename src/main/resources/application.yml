@@ -1,0 +1,35 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: config-server
+  # JDBC is the primary backend. Switch to native only as an emergency fallback.
+  profiles:
+    active: ${CONFIG_SERVER_PROFILE:jdbc}
+
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/lex_core?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  cloud:
+    config:
+      server:
+        jdbc:
+          default-label: master
+          sql: SELECT `KEY`, `VALUE` FROM PROPERTIES WHERE APPLICATION=? AND PROFILE=? AND LABEL=?
+        native:
+          search-locations: ${CONFIG_REPO_PATH:file:../../../config-repo}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+
+logging:
+  level:
+    org.springframework.cloud.config: INFO
