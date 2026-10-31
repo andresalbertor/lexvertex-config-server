@@ -10,6 +10,9 @@ version = '0.1.0-SNAPSHOT'
 
 java { toolchain { languageVersion = JavaLanguageVersion.of(21) } }
 
+// Fat jar only — Dockerfile COPY build/libs/*.jar must not pick *-plain.jar
+jar { enabled = false }
+
 repositories { mavenCentral() }
 
 dependencyManagement {
