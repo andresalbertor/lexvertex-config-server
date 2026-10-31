@@ -9,9 +9,10 @@ spring:
     active: ${CONFIG_SERVER_PROFILE:jdbc}
 
   datasource:
-    url: ${DB_URL:jdbc:mysql://localhost:3306/lex_core?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
-    username: ${DB_USER}
-    password: ${DB_PASSWORD}
+    # Dedicated schema/user — never lex_core / lex_app.
+    url: ${DB_CONFIG_URL:jdbc:mysql://localhost:3306/lex_config?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+    username: ${DB_CONFIG_USER:lex_config_app}
+    password: ${DB_CONFIG_PASSWORD}
   cloud:
     config:
       server:
@@ -19,6 +20,7 @@ spring:
           default-label: master
           sql: SELECT `KEY`, `VALUE` FROM PROPERTIES WHERE APPLICATION=? AND PROFILE=? AND LABEL=?
         native:
+          # Emergency only: drop YAML files here manually if jdbc is unavailable.
           search-locations: ${CONFIG_REPO_PATH:file:../../../config-repo}
 
 eureka:

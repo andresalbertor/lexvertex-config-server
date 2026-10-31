@@ -1,8 +1,14 @@
 # config-repo (fallback de emergencia)
 
-**Fuente de verdad en runtime: MySQL `lex_core.PROPERTIES`** vía config-server perfil `jdbc` (`CONFIG_SERVER_PROFILE=jdbc`, default).
+**Fuente de verdad en runtime: MySQL `lex_config.PROPERTIES`** vía config-server perfil `jdbc`
+(`CONFIG_SERVER_PROFILE=jdbc`, default).
 
-No edites YAML para cambiar config de ambientes en operación normal. Cambia la BD con una migración Flyway en `lexvertex-migrate` (`INSERT`/`UPDATE`/`DELETE` sobre `PROPERTIES` con `PROFILE` = `default` | `dev` | `prod`).
+Usuario JDBC: `lex_config_app` (solo `SELECT`). Esquema: `lex_config` — **no** usar `lex_core` / `lex_app`.
+
+No edites archivos de esta carpeta para cambiar config de ambientes. Cambia la BD con una
+migración Flyway en `lexvertex-migrate` bajo `db/migration/lex_config/`
+(`INSERT` / `UPDATE` / `DELETE` sobre `PROPERTIES` con `PROFILE` = `default` | `dev` | `prod`).
+Ejecutar: `migrate --schema=lex_config`.
 
 | PROFILE | Uso |
 |---|---|
@@ -10,16 +16,12 @@ No edites YAML para cambiar config de ambientes en operación normal. Cambia la 
 | `dev` | Localhost (desarrollo) |
 | `prod` | VPS / Docker DNS + `*.lexvertex.cloud` |
 
-Clientes locales: `SPRING_PROFILES_ACTIVE=dev` (default en gateway, identity, etc.).
+Clientes locales: `SPRING_PROFILES_ACTIVE=dev`.
 
-## YAML de esta carpeta
+## Esta carpeta
 
-Espejo de emergencia si alguien arranca config-server con `CONFIG_SERVER_PROFILE=native`. En operación normal (`jdbc`) **no se usan**.
+Vacía a propósito. Solo existe para el fallback `CONFIG_SERVER_PROFILE=native`
+(`spring.cloud.config.server.native.search-locations`). En operación normal (`jdbc`) **no se usa**.
 
-| Archivo | Contenido |
-|---|---|
-| `gateway-service.yml` | Shared: port, discovery.locator=false, eureka placeholders |
-| `gateway-service-dev.yml` | Rutas localhost (`lb://…`, vigilis → `http://localhost:8000`) |
-| `gateway-service-prod.yml` | Rutas VPS / host Vigilís |
-
-Si regeneras seed JDBC (`seed_config_properties.py` / V49+), mantén estos YAML alineados con las filas `gateway-service`/`dev|prod`.
+Si necesitas emergencia native, coloca YAML temporales aquí (o apunta `CONFIG_REPO_PATH`);
+no regeneres seed JDBC desde YAML.
