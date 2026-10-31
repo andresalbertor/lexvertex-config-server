@@ -10,3 +10,4 @@ bin/
 *.log
 .env
 .env.local
+docs/env/config-server.pdn.env
