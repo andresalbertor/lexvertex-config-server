@@ -11,3 +11,6 @@ bin/
 .env
 .env.local
 docs/env/config-server.pdn.env
+
+# Documentacion local: vive en el docs de la raiz del workspace
+/docs/
