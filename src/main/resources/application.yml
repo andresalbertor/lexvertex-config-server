@@ -39,6 +39,15 @@ management:
   endpoint:
     health:
       show-details: never
+      # Readiness must include JDBC — process UP alone is not enough for dependents.
+      probes:
+        enabled: true
+      group:
+        readiness:
+          include: readinessState,db
+  health:
+    db:
+      enabled: true
 
 logging:
   level:
